@@ -1,6 +1,6 @@
 {
   "name": "@innovateium/payload-dpo",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "PayGate PayWeb3 payment gateway plugin for Payload CMS v3",
   "license": "MIT",
   "author": "Innovateium <info@innovateium.co.bw> (https://innovateium.co.bw)",
