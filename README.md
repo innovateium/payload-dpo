@@ -2,6 +2,9 @@
 
 [![npm](https://img.shields.io/npm/v/@innovateium/payload-dpo)](https://www.npmjs.com/package/@innovateium/payload-dpo)
 [![License](https://img.shields.io/github/license/innovateium/payload-dpo)](LICENSE)
+[![Beta](https://img.shields.io/badge/status-beta-yellow)]()
+
+> **Beta** — This plugin is in active development. APIs may change between versions.
 
 A [Payload CMS](https://payloadcms.com) v3 plugin that integrates [PayGate PayWeb3](https://www.paygate.co.za/payweb3/) (Direct Pay Online) — a payment gateway serving South African and African markets.
 
