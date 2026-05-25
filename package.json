@@ -1,8 +1,27 @@
 {
-  "name": "",
+  "name": "@innovateium/payload-dpo",
   "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "description": "PayGate PayWeb3 payment gateway plugin for Payload CMS v3",
   "license": "MIT",
+  "author": "Innovateium <dev@innovateium.com> (https://innovateium.com)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innovateium/payload-dpo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/innovateium/payload-dpo/issues"
+  },
+  "homepage": "https://github.com/innovateium/payload-dpo",
+  "keywords": [
+    "payload",
+    "payload-cms",
+    "payload-plugin",
+    "paygate",
+    "payweb3",
+    "payment-gateway",
+    "dpo",
+    "botswana"
+  ],
   "type": "module",
   "exports": {
     ".": {

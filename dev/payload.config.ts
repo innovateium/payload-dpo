@@ -3,10 +3,10 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
 import path from 'path'
 import { buildConfig } from 'payload'
-import {  } from ''
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { dpoPlugin } from '../src/index.js'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
@@ -58,10 +58,22 @@ const buildConfigWithMemoryDB = async () => {
       await seed(payload)
     },
     plugins: [
-      ({
+      dpoPlugin({
+        baseUrl: process.env.BASE_URL,
         collections: {
           posts: true,
         },
+        paygateId: process.env.PAYGATE_ID,
+        paygateKey: process.env.PAYGATE_KEY,
+
+        routes: {
+          initiate: '/dpo/initiate',
+          return: '/dpo/return',
+          notify: '/dpo/notify',
+          status: '/dpo/status',
+        },
+        defaultCurrency: 'ZAR',
+        transactionCollectionSlug: 'dpo-transactions',
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
