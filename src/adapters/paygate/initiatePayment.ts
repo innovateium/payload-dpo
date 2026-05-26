@@ -124,7 +124,18 @@ export const initiatePayment =
         currency: txCurrency,
         customerEmail,
         customer: req.user?.id,
-        items: cart.items,
+        items: (cart.items as Array<Record<string, unknown>>).map((item) => ({
+          product:
+            typeof item.product === 'object'
+              ? (item.product as Record<string, unknown>).id
+              : item.product,
+          variant: item.variant
+            ? typeof item.variant === 'object'
+              ? (item.variant as Record<string, unknown>).id
+              : item.variant
+            : null,
+          quantity: item.quantity,
+        })),
         paymentMethod: 'paygate',
         paygate: {
           payRequestId: responseParams.PAY_REQUEST_ID,
