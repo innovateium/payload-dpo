@@ -113,13 +113,13 @@ export const initiatePayment =
     const billingAddress =
       (cart.billingAddress as Record<string, unknown>) ||
       (cart.shippingAddress as Record<string, unknown>) ||
-      null
+      undefined
 
     await payload.create({
       collection: transactionsSlug,
       data: {
         amount: Math.round(amount),
-        billingAddress,
+        ...(billingAddress ? { billingAddress } : {}),
         cart: cart.id,
         currency: txCurrency,
         customerEmail,

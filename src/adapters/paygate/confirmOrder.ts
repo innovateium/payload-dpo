@@ -87,7 +87,11 @@ export const confirmOrder =
       req,
     })
 
-    const cartId = (transaction as Record<string, unknown>).cart as string | undefined
+    const rawCart = (transaction as Record<string, unknown>).cart
+    const cartId =
+      rawCart && typeof rawCart === 'object'
+        ? ((rawCart as Record<string, unknown>).id as string)
+        : (rawCart as string | undefined)
     if (cartId && args.cartsSlug) {
       try {
         await clearCart({
@@ -96,11 +100,19 @@ export const confirmOrder =
           payload,
           req,
         })
-      } catch {
         await payload.update({
           id: cartId,
           collection: args.cartsSlug,
           data: { purchasedAt: new Date().toISOString() },
+        })
+      } catch {
+        await payload.update({
+          id: cartId,
+          collection: args.cartsSlug,
+          data: {
+            items: [],
+            purchasedAt: new Date().toISOString(),
+          },
         })
       }
     }
