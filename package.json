@@ -1,6 +1,6 @@
 {
   "name": "@innovateium/payload-dpo",
-  "version": "0.0.7-beta",
+  "version": "0.0.8-beta",
   "description": "PayGate PayWeb3 payment gateway plugin for Payload CMS v3",
   "license": "MIT",
   "author": "Innovateium <info@innovateium.co.bw> (https://innovateium.co.bw)",
@@ -70,6 +70,7 @@
     "@payloadcms/db-sqlite": "3.84.1",
     "@payloadcms/eslint-config": "3.28.0",
     "@payloadcms/next": "3.84.1",
+    "@payloadcms/plugin-ecommerce": "^3.85.0",
     "@payloadcms/richtext-lexical": "3.84.1",
     "@payloadcms/ui": "3.84.1",
     "@playwright/test": "1.58.2",
@@ -112,6 +113,5 @@
       "unrs-resolver"
     ]
   },
-  "registry": "https://registry.npmjs.org/",
-  "dependencies": {}
+  "registry": "https://registry.npmjs.org/"
 }

@@ -1,3 +1,5 @@
+import { clearCart } from '@payloadcms/plugin-ecommerce'
+
 import { generateSignature } from '../../lib/checksum.js'
 import { DEFAULT_PAYGATE_URL } from '../../lib/constants.js'
 import { queryTransaction } from '../../lib/paygate.js'
@@ -78,18 +80,29 @@ export const confirmOrder =
         amount: transaction.amount as number,
         currency: transaction.currency as string,
         ...(data.customerEmail ? { customerEmail: data.customerEmail } : {}),
+        customer: req.user?.id,
         status: 'processing',
         transactions: [transaction.id],
       },
       req,
     })
 
-    if (args.cartsSlug && (transaction as Record<string, unknown>).cart) {
-      await payload.update({
-        id: (transaction as Record<string, unknown>).cart as string,
-        collection: args.cartsSlug,
-        data: { purchasedAt: new Date().toISOString() },
-      })
+    const cartId = (transaction as Record<string, unknown>).cart as string | undefined
+    if (cartId && args.cartsSlug) {
+      try {
+        await clearCart({
+          cartID: cartId,
+          cartsSlug: args.cartsSlug,
+          payload,
+          req,
+        })
+      } catch {
+        await payload.update({
+          id: cartId,
+          collection: args.cartsSlug,
+          data: { purchasedAt: new Date().toISOString() },
+        })
+      }
     }
 
     return {

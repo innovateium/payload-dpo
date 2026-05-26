@@ -110,12 +110,21 @@ export const initiatePayment =
       throw new Error('Invalid PayGate response — missing PAY_REQUEST_ID')
     }
 
+    const billingAddress =
+      (cart.billingAddress as Record<string, unknown>) ||
+      (cart.shippingAddress as Record<string, unknown>) ||
+      null
+
     await payload.create({
       collection: transactionsSlug,
       data: {
         amount: Math.round(amount),
+        billingAddress,
+        cart: cart.id,
         currency: txCurrency,
-        email: customerEmail,
+        customerEmail,
+        customer: req.user?.id,
+        items: cart.items,
         paymentMethod: 'paygate',
         paygate: {
           payRequestId: responseParams.PAY_REQUEST_ID,

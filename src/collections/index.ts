@@ -5,7 +5,11 @@ import type { DpoPluginConfig } from '../types.js'
 import { createDpoTransactionsCollection } from './DpoTransactions.js'
 
 export const getCollections = (pluginOptions: DpoPluginConfig): CollectionConfig[] => {
-  const collections: CollectionConfig[] = [createDpoTransactionsCollection(pluginOptions)]
+  const collections: CollectionConfig[] = []
+
+  if (pluginOptions.registerTransactionsCollection !== false) {
+    collections.push(createDpoTransactionsCollection(pluginOptions))
+  }
 
   return collections
 }

@@ -16,6 +16,7 @@ export type DpoPluginConfig = {
   defaultLocale?: string
   disabled?: boolean
   onSuccess?: (args: { payload: Payload; transaction: Record<string, unknown> }) => Promise<void>
+  registerTransactionsCollection?: boolean
   paygateId?: string
   paygateKey?: string
   paygateUrl?: string
