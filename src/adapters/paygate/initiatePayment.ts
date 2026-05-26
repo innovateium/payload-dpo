@@ -1,3 +1,5 @@
+import crypto from 'crypto'
+
 import { generateSignature } from '../../lib/checksum.js'
 import { CURRENCY_LOCALE_MAP, DEFAULT_PAYGATE_URL } from '../../lib/constants.js'
 import { initiateTransaction } from '../../lib/paygate.js'
@@ -53,9 +55,25 @@ export const initiatePayment =
     const cartItems = (cart?.items as Array<Record<string, unknown>>) || []
     const amount = cartItems.reduce((acc: number, item: Record<string, unknown>) => {
       const product = item.product as Record<string, unknown> | undefined
+      const variant = item.variant as Record<string, unknown> | undefined
       const pricePayload = product?.pricePayload as Record<string, unknown> | undefined
       const price = pricePayload?.[txCurrency] as Record<string, unknown> | undefined
-      const unitAmount = (price?.amount as number) || (product?.price as number) || 0
+      let unitAmount = (price?.amount as number) || (product?.price as number) || 0
+      if (!unitAmount) {
+        const priceField = (product as Record<string, unknown>)?.[`priceIn${txCurrency}`]
+        unitAmount =
+          typeof priceField === 'object'
+            ? ((priceField as Record<string, unknown>)?.amount as number) || 0
+            : (priceField as number) || 0
+      }
+      if (variant) {
+        const variantPriceField = (variant as Record<string, unknown>)?.[`priceIn${txCurrency}`]
+        const variantPrice =
+          typeof variantPriceField === 'object'
+            ? ((variantPriceField as Record<string, unknown>)?.amount as number) || 0
+            : (variantPriceField as number) || 0
+        unitAmount = variantPrice || (variant?.price as number) || unitAmount
+      }
       const qty = (item.quantity as number) || 1
       return acc + unitAmount * qty
     }, 0)
@@ -109,7 +127,14 @@ export const initiatePayment =
       },
     })
 
+    const redirectChecksum = crypto
+      .createHash('md5')
+      .update(`${paygateId}${responseParams.PAY_REQUEST_ID}${reference}${paygateKey}`)
+      .digest('hex')
+      .toLowerCase()
+
     return {
+      checksum: redirectChecksum,
       message: 'Payment initiated',
       payRequestId: responseParams.PAY_REQUEST_ID,
       paymentUrl: `${paygateUrl}/payweb3/process.trans`,

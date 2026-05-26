@@ -26,6 +26,7 @@ export type PaygateAdapterClient = {
 }
 
 export type InitiatePaymentReturnType = {
+  checksum: string
   message: string
   payRequestId: string
   paymentUrl: string
