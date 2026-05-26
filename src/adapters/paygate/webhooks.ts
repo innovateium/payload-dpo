@@ -8,7 +8,10 @@ export const webhookHandler =
   async (req: PayloadRequest): Promise<Response> => {
     try {
       const paygateUrl = props.paygateUrl || DEFAULT_PAYGATE_URL
-      const rawText = (await req.text?.()) ?? ''
+      let rawText = ''
+      try {
+        rawText = (await req.text?.()) ?? ''
+      } catch {}
 
       const body: Record<string, string> = {}
       for (const pair of rawText.split('&')) {
@@ -30,7 +33,7 @@ export const webhookHandler =
         const existing = await req.payload.find({
           collection: slug,
           limit: 1,
-          where: { payRequestId: { equals: payRequestId } },
+          where: { 'paygate.payRequestId': { equals: payRequestId } },
         })
 
         if (existing.docs.length > 0) {
