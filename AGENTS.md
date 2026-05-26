@@ -23,8 +23,15 @@ MD5 hash of the concatenated values of these fields (in order) + the `PAYGATE_KE
 
 ```
 src/
-├── index.ts                      # Plugin entry — higher-order function transforms payload config
+├── index.ts                      # Plugin entry — exports dpoPlugin + paygateAdapter + paygateAdapterClient
 ├── types.ts                      # DpoPluginConfig + DpoRoutes types
+├── adapters/
+│   ├── index.ts                  # Re-exports adapter
+│   └── paygate/
+│       ├── index.ts              # paygateAdapter / paygateAdapterClient factory functions
+│       ├── initiatePayment.ts    # e-commerce adapter initiate implementation
+│       ├── confirmOrder.ts       # e-commerce adapter confirm implementation
+│       └── webhooks.ts           # e-commerce adapter webhook/IPN handler
 ├── collections/
 │   ├── DpoTransactions.ts        # Transaction collection — stores every payment attempt
 │   └── index.ts                  # Collection registry helper
@@ -41,7 +48,7 @@ src/
 │   ├── paygate.ts                # HTTP helpers: initiateTransaction(), queryTransaction(), parseResponse()
 │   └── constants.ts              # SIGNATURE_FIELDS, STATUS_MAP, CURRENCY_LOCALE_MAP, DEFAULT_ROUTES, DEFAULT_PAYGATE_URL
 └── exports/
-    ├── client.ts                 # Re-export client components (empty — no admin components now)
+    ├── client.ts                 # Re-exports paygateAdapterClient for client-side usage
     └── rsc.ts                    # Re-export server components (empty — no admin components now)
 dev/
 ├── app/
@@ -121,17 +128,63 @@ Next.js route priority (most specific wins):
 
 The return and notify Next.js routes are dev-only fallbacks. In production, the Payload config endpoints should handle the routes directly (provided the body consumption issue is addressed upstream).
 
-### 5. Hooks
+### 5. E-commerce Plugin Payment Adapter
+
+The plugin doubles as a `PaymentAdapter` for `@payloadcms/plugin-ecommerce`. Use it inside the e-commerce plugin's `payments.paymentMethods` array:
+
+```ts
+import { ecommercePlugin } from '@payloadcms/plugin-ecommerce'
+import { paygateAdapter } from '@innovateium/payload-dpo'
+
+export default buildConfig({
+  plugins: [
+    ecommercePlugin({
+      access: {
+        /* ... */
+      },
+      customers: { slug: 'users' },
+      payments: {
+        paymentMethods: [
+          paygateAdapter({
+            paygateId: process.env.PAYGATE_ID!,
+            paygateKey: process.env.PAYGATE_KEY!,
+            baseUrl: process.env.BASE_URL,
+            defaultCurrency: 'ZAR',
+          }),
+        ],
+      },
+    }),
+  ],
+})
+```
+
+The adapter auto-registers endpoints under `/api/payments/paygate/`:
+
+| Endpoint                                   | Purpose                                              |
+| ------------------------------------------ | ---------------------------------------------------- |
+| `POST /api/payments/paygate/initiate`      | Calls `initiate.trans`, creates tx, returns redirect |
+| `POST /api/payments/paygate/confirm-order` | Queries `query.trans`, creates Order if Approved     |
+| `POST /api/payments/paygate/webhooks`      | Receives PayGate IPN, updates transaction status     |
+
+Client-side adapter available at `@innovateium/payload-dpo/client`:
+
+```ts
+import { paygateAdapterClient } from '@innovateium/payload-dpo/client'
+```
+
+**Note**: Use `dpoPlugin()` standalone OR `paygateAdapter` inside the e-commerce plugin — not both. The standalone plugin provides its own transaction collection (`dpo-transactions`) and endpoints at `/api/dpo/*`, while the adapter reuses the e-commerce plugin's `transactions` collection.
+
+### 6. Hooks
 
 - **After Change** on DpoTransactions: fires `pluginOptions.onSuccess` callback when `transactionStatus` changes to `"1"` (Approved) — useful for sending confirmation emails, updating related order statuses, etc.
 
-### 6. Library (`src/lib/`)
+### 7. Library (`src/lib/`)
 
 - `constants.ts` — `SIGNATURE_FIELDS`, `STATUS_MAP`, `CURRENCY_LOCALE_MAP` (currency → {country, locale}), `DEFAULT_ROUTES`, `DEFAULT_PAYGATE_URL`, `TRANSACTION_STATUS_OPTIONS`, `CURRENCY_OPTIONS`
 - `checksum.ts` — `generateSignature(params, paygateKey)` — maps `SIGNATURE_FIELDS` to param values, concatenates with `paygateKey`, returns MD5 hash
 - `paygate.ts` — `initiateTransaction(url, data)` and `queryTransaction(url, data)` — native `fetch` + `URLSearchParams` postForm wrapper, returns parsed `Record<string, string>`; `parseResponse(responseData)` for URL-encoded response parsing
 
-### 7. Currency → Country/Locale auto-resolution
+### 8. Currency → Country/Locale auto-resolution
 
 When a currency is selected, the plugin auto-resolves COUNTRY and LOCALE:
 
@@ -143,7 +196,7 @@ When a currency is selected, the plugin auto-resolves COUNTRY and LOCALE:
 
 Override with `defaultCountry` / `defaultLocale` in plugin config.
 
-### 8. Known issues
+### 9. Known issues
 
 - **PayGate IPN body consumed by Payload REST handler**: The `@payloadcms/next` REST handler calls `req.json()` for POST requests, consuming the body stream. When the custom endpoint handler then calls `req.text()`, it returns empty. Fixed via standalone Next.js route for notify.
 - **Test credentials only process ZAR**: PayGate test credentials `10011072130`/`secret` only support ZAR transactions. BWP and USD work with production credentials.
@@ -159,11 +212,12 @@ Override with `defaultCountry` / `defaultLocale` in plugin config.
 | 2. Library layer           | Done       | checksum.ts, paygate.ts, constants.ts                 |
 | 3. Transactions collection | Done       | DpoTransactions.ts with configurable slug             |
 | 4. Endpoints               | Done       | initiate, return, notify, status — paths configurable |
-| 5. Hooks                   | Done       | afterPayment.ts with onSuccess callback               |
-| 6. Admin UI                | Not needed | No dashboard components wanted                        |
-| 7. Plugin wiring           | Done       | index.ts registers collections + endpoints            |
-| 8. Dev environment         | Done       | payload.config.ts with test credentials               |
-| 9. Testing                 | Pending    | Unit/int/e2e tests not yet written                    |
+| 5. E-commerce adapter      | Done       | paygateAdapter conforming to PaymentAdapter interface |
+| 6. Hooks                   | Done       | afterPayment.ts with onSuccess callback               |
+| 7. Admin UI                | Not needed | No dashboard components wanted                        |
+| 8. Plugin wiring           | Done       | index.ts registers collections + endpoints            |
+| 9. Dev environment         | Done       | payload.config.ts with test credentials               |
+| 10. Testing                | Pending    | Unit/int/e2e tests not yet written                    |
 
 ---
 
