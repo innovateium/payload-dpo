@@ -67,7 +67,7 @@ export const confirmOrder =
     if (transactionStatus !== '1') {
       return {
         message: 'Payment not completed',
-        orderID: null,
+        orderID: '',
         transactionID: transaction.id,
       }
     }

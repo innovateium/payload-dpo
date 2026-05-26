@@ -35,7 +35,7 @@ export type InitiatePaymentReturnType = {
 
 export type ConfirmOrderReturnType = {
   message: string
-  orderID: string | null
+  orderID: string
   transactionID: string
 }
 
