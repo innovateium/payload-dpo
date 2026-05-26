@@ -4,6 +4,7 @@ export type DpoRoutes = {
   initiate?: string
   notify?: string
   return?: string
+  returnResult?: string
   status?: string
 }
 

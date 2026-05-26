@@ -4,6 +4,7 @@ export const DEFAULT_ROUTES = {
   initiate: '/dpo/initiate',
   notify: '/dpo/notify',
   return: '/dpo/return',
+  returnResult: '/checkout/confirm-order',
   status: '/dpo/status',
 } as const
 

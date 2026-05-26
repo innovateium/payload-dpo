@@ -6,6 +6,7 @@ import { DEFAULT_ROUTES } from '../lib/constants.js'
 
 export const createReturnEndpoint = (pluginOptions: DpoPluginConfig): Endpoint[] => {
   const returnPath = pluginOptions.routes?.return ?? DEFAULT_ROUTES.return
+  const returnResultPath = pluginOptions.routes?.returnResult ?? DEFAULT_ROUTES.returnResult
 
   return [
     {
@@ -21,7 +22,7 @@ export const createReturnEndpoint = (pluginOptions: DpoPluginConfig): Endpoint[]
         }
 
         return new Response(null, {
-          headers: { Location: `${baseUrl}/payment-result?PAY_REQUEST_ID=${payRequestId}` },
+          headers: { Location: `${baseUrl}${returnResultPath}?PAY_REQUEST_ID=${payRequestId}` },
           status: 302,
         })
       },
@@ -56,7 +57,7 @@ export const createReturnEndpoint = (pluginOptions: DpoPluginConfig): Endpoint[]
         }
 
         return new Response(null, {
-          headers: { Location: `${baseUrl}/payment-result?PAY_REQUEST_ID=${payRequestId}` },
+          headers: { Location: `${baseUrl}${returnResultPath}?PAY_REQUEST_ID=${payRequestId}` },
           status: 302,
         })
       },
