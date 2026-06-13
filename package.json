@@ -104,14 +104,7 @@
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
-    "pnpm": "^9 || ^10"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "esbuild",
-      "unrs-resolver"
-    ]
+    "pnpm": "^9 || ^10 || ^11"
   },
   "registry": "https://registry.npmjs.org/"
 }

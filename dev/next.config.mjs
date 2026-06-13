@@ -16,7 +16,7 @@ const nextConfig = {
     return webpackConfig
   },
   serverExternalPackages: ['mongodb-memory-server'],
-  allowedDevOrigins: ['7f7e-143-105-253-75.ngrok-free.app'],
+  allowedDevOrigins: ['0f87-143-105-253-165.ngrok-free.app'],
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
