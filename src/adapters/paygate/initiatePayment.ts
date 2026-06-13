@@ -1,17 +1,18 @@
 import crypto from 'crypto'
 
+import type { InitiatePaymentReturnType, PaygateAdapterArgs } from './index.js'
+
 import { generateSignature } from '../../lib/checksum.js'
 import { CURRENCY_LOCALE_MAP, DEFAULT_PAYGATE_URL } from '../../lib/constants.js'
 import { initiateTransaction } from '../../lib/paygate.js'
-import type { PaygateAdapterArgs, InitiatePaymentReturnType } from './index.js'
 
 function resolveCountry(currency: string, configDefault: string | undefined): string {
-  if (configDefault) return configDefault
+  if (configDefault) {return configDefault}
   return CURRENCY_LOCALE_MAP[currency]?.country ?? 'ZAF'
 }
 
 function resolveLocale(currency: string, configDefault: string | undefined): string {
-  if (configDefault) return configDefault
+  if (configDefault) {return configDefault}
   return CURRENCY_LOCALE_MAP[currency]?.locale ?? 'en-za'
 }
 
@@ -67,7 +68,7 @@ export const initiatePayment =
             : (priceField as number) || 0
       }
       if (variant) {
-        const variantPriceField = (variant as Record<string, unknown>)?.[`priceIn${txCurrency}`]
+        const variantPriceField = (variant)?.[`priceIn${txCurrency}`]
         const variantPrice =
           typeof variantPriceField === 'object'
             ? ((variantPriceField as Record<string, unknown>)?.amount as number) || 0
@@ -122,25 +123,25 @@ export const initiatePayment =
         ...(billingAddress ? { billingAddress } : {}),
         cart: cart.id,
         currency: txCurrency,
-        customerEmail,
         customer: req.user?.id,
+        customerEmail,
         items: (cart.items as Array<Record<string, unknown>>).map((item) => ({
           product:
             typeof item.product === 'object'
               ? (item.product as Record<string, unknown>).id
               : item.product,
+          quantity: item.quantity,
           variant: item.variant
             ? typeof item.variant === 'object'
               ? (item.variant as Record<string, unknown>).id
               : item.variant
             : null,
-          quantity: item.quantity,
         })),
-        paymentMethod: 'paygate',
         paygate: {
           payRequestId: responseParams.PAY_REQUEST_ID,
           reference,
         },
+        paymentMethod: 'paygate',
         rawResponse: responseParams,
         reference,
         status: 'pending',
@@ -156,8 +157,8 @@ export const initiatePayment =
     return {
       checksum: redirectChecksum,
       message: 'Payment initiated',
-      payRequestId: responseParams.PAY_REQUEST_ID,
       paymentUrl: `${paygateUrl}/payweb3/process.trans`,
+      payRequestId: responseParams.PAY_REQUEST_ID,
       reference,
     }
   }

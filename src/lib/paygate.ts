@@ -9,8 +9,8 @@ export function parseResponse(responseData: string): Record<string, string> {
     if (eqIdx === -1) {
       result[pair] = ''
     } else {
-      const key = decodeURIComponent(pair.slice(0, eqIdx))
-      const value = decodeURIComponent(pair.slice(eqIdx + 1))
+      const key = decodeURIComponent(pair.slice(0, eqIdx).replace(/\+/g, '%20'))
+      const value = decodeURIComponent(pair.slice(eqIdx + 1).replace(/\+/g, '%20'))
       if (key) {
         result[key] = value
       }

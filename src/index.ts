@@ -2,6 +2,7 @@ import type { Config } from 'payload'
 
 import type { DpoPluginConfig } from './types.js'
 
+import DpoDashboard from './admin/Dashboard.js'
 import { getCollections } from './collections/index.js'
 import { getEndpoints } from './endpoints/index.js'
 
@@ -26,6 +27,19 @@ export const dpoPlugin =
     }
 
     config.endpoints = [...(config.endpoints || []), ...enabledEndpoints]
+
+    if (pluginOptions.adminDashboard) {
+      config.admin = {
+        ...config.admin,
+        components: {
+          ...config.admin?.components,
+          afterDashboard: [
+            ...((config.admin?.components as any)?.afterDashboard || []),
+            DpoDashboard,
+          ],
+        },
+      }
+    }
 
     const incomingOnInit = config.onInit
 

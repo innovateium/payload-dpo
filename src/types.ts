@@ -9,6 +9,7 @@ export type DpoRoutes = {
 }
 
 export type DpoPluginConfig = {
+  adminDashboard?: boolean
   baseUrl?: string
   collections?: Partial<Record<CollectionSlug, true>>
   defaultCountry?: string
@@ -16,10 +17,10 @@ export type DpoPluginConfig = {
   defaultLocale?: string
   disabled?: boolean
   onSuccess?: (args: { payload: Payload; transaction: Record<string, unknown> }) => Promise<void>
-  registerTransactionsCollection?: boolean
   paygateId?: string
   paygateKey?: string
   paygateUrl?: string
+  registerTransactionsCollection?: boolean
   routes?: DpoRoutes
   transactionCollectionSlug?: string
 }

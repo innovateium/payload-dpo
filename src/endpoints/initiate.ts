@@ -1,8 +1,10 @@
 import type { Endpoint, PayloadRequest } from 'payload'
+
+import type { DpoPluginConfig, DpoRoutes } from '../types.js'
+
 import { generateSignature } from '../lib/checksum.js'
 import { CURRENCY_LOCALE_MAP, DEFAULT_PAYGATE_URL, DEFAULT_ROUTES } from '../lib/constants.js'
 import { initiateTransaction } from '../lib/paygate.js'
-import type { DpoPluginConfig, DpoRoutes } from '../types.js'
 
 function buildReturnUrl(baseUrl: string, routes: DpoRoutes | undefined): string {
   return `${baseUrl}/api${routes?.return ?? DEFAULT_ROUTES.return}`
@@ -13,12 +15,12 @@ function buildNotifyUrl(baseUrl: string, routes: DpoRoutes | undefined): string 
 }
 
 function resolveCountry(currency: string, configDefault: string | undefined): string {
-  if (configDefault) return configDefault
+  if (configDefault) {return configDefault}
   return CURRENCY_LOCALE_MAP[currency]?.country ?? 'ZAF'
 }
 
 function resolveLocale(currency: string, configDefault: string | undefined): string {
-  if (configDefault) return configDefault
+  if (configDefault) {return configDefault}
   return CURRENCY_LOCALE_MAP[currency]?.locale ?? 'en-za'
 }
 

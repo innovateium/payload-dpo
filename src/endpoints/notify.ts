@@ -16,7 +16,7 @@ export const createNotifyEndpoint = (pluginOptions: DpoPluginConfig): Endpoint =
         const body: Record<string, string> = {}
         for (const pair of rawText.split('&')) {
           const eqIdx = pair.indexOf('=')
-          if (eqIdx === -1) continue
+          if (eqIdx === -1) {continue}
           body[decodeURIComponent(pair.slice(0, eqIdx))] = decodeURIComponent(pair.slice(eqIdx + 1))
         }
 
@@ -27,8 +27,8 @@ export const createNotifyEndpoint = (pluginOptions: DpoPluginConfig): Endpoint =
           return Response.json(
             {
               error: 'Invalid notification data',
-              receivedText: rawText.slice(0, 500),
               receivedKeys: Object.keys(body),
+              receivedText: rawText.slice(0, 500),
             },
             { status: 400 },
           )

@@ -1,9 +1,10 @@
 import { clearCart } from '@payloadcms/plugin-ecommerce'
 
+import type { ConfirmOrderReturnType, PaygateAdapterArgs } from './index.js'
+
 import { generateSignature } from '../../lib/checksum.js'
 import { DEFAULT_PAYGATE_URL } from '../../lib/constants.js'
 import { queryTransaction } from '../../lib/paygate.js'
-import type { ConfirmOrderReturnType, PaygateAdapterArgs } from './index.js'
 
 export const confirmOrder =
   (props: PaygateAdapterArgs) =>

@@ -43,9 +43,9 @@ export const TRANSACTION_STATUS_OPTIONS = [
 ]
 
 export const CURRENCY_LOCALE_MAP: Record<string, { country: string; locale: string }> = {
-  ZAR: { country: 'ZAF', locale: 'en-za' },
   BWP: { country: 'BWA', locale: 'en-bw' },
   USD: { country: 'USA', locale: 'en-us' },
+  ZAR: { country: 'ZAF', locale: 'en-za' },
 }
 
 export const CURRENCY_OPTIONS = [

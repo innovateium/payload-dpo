@@ -28,8 +28,8 @@ export type PaygateAdapterClient = {
 export type InitiatePaymentReturnType = {
   checksum: string
   message: string
-  payRequestId: string
   paymentUrl: string
+  payRequestId: string
   reference: string
 }
 
@@ -61,18 +61,18 @@ export const paygateAdapter = (props: PaygateAdapterArgs) => {
   }
 
   return {
+    name: 'paygate',
     confirmOrder: (args: any) => confirmOrder(props)(args),
     endpoints: [ep],
     group: groupField,
     initiatePayment: (args: any) => initiatePayment(props)(args),
     label: props.label || 'PayGate',
-    name: 'paygate',
   }
 }
 
 export const paygateAdapterClient = (): PaygateAdapterClient => ({
+  name: 'paygate',
   confirmOrder: true,
   initiatePayment: true,
   label: 'PayGate',
-  name: 'paygate',
 })
