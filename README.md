@@ -224,16 +224,46 @@ Access: any logged-in admin user. All fields are read-only in the admin UI (tran
 
 Initiate a payment with PayGate.
 
-**Body:** `{ amount: string, email: string, currency?: string, reference?: string, relatedCollection?: string, relatedDoc?: string }`
+**Body:**
+
+```json
+{
+  "amount": "1000",
+  "email": "customer@example.com",
+  "currency": "ZAR"
+}
+```
 
 - `amount` is in cents (e.g. `"1000"` = R10.00)
-- Returns `{ payRequestId, checksum, paymentUrl, reference, success }`
+- Optional: `reference`, `relatedCollection`, `relatedDoc`
+
+**Returns:**
+
+```json
+{
+  "payRequestId": "string",
+  "checksum": "string",
+  "paymentUrl": "string",
+  "reference": "string",
+  "success": true
+}
+```
 
 ### `GET /api/dpo/status?id={payRequestId}`
 
 Query PayGate for the latest transaction status.
 
-Returns `{ transactionStatus, statusMessage, isSuccessful, raw, success }`.
+**Returns:**
+
+```json
+{
+  "transactionStatus": "string",
+  "statusMessage": "string",
+  "isSuccessful": false,
+  "raw": {},
+  "success": true
+}
+```
 
 ### `GET/POST /api/dpo/return`
 
