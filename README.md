@@ -218,6 +218,15 @@ Override with `defaultCountry` / `defaultLocale`.
 
 Access: any logged-in admin user. All fields are read-only in the admin UI (transactions are created/modified programmatically).
 
+## Exports
+
+| Import path                       | Exports                                                               |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `@innovateium/payload-dpo`        | `dpoPlugin`, `paygateAdapter`, `paygateAdapterClient`                 |
+| `@innovateium/payload-dpo/client` | `paygateAdapterClient`                                                |
+| `@innovateium/payload-dpo/rsc`    | `DpoDashboard`                                                        |
+| `@innovateium/payload-dpo/types`  | `DpoPluginConfig`, `DpoRoutes`, `PayGateStatus`, `PayGateStatusLabel` |
+
 ## API Endpoints (standalone mode)
 
 ### `POST /api/dpo/initiate`
