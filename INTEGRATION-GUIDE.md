@@ -115,6 +115,15 @@ Step 3: Notify & Return (parallel)
 
 **Do not use both modes simultaneously.** Choose one.
 
+### Package exports
+
+| Import path                       | Exports                                                               |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `@innovateium/payload-dpo`        | `dpoPlugin`, `paygateAdapter`, `paygateAdapterClient`                 |
+| `@innovateium/payload-dpo/client` | `paygateAdapterClient`                                                |
+| `@innovateium/payload-dpo/rsc`    | `DpoDashboard`                                                        |
+| `@innovateium/payload-dpo/types`  | `DpoPluginConfig`, `DpoRoutes`, `PayGateStatus`, `PayGateStatusLabel` |
+
 ---
 
 ## 5. Standalone Integration
@@ -260,7 +269,7 @@ pnpm add @innovateium/payload-dpo @payloadcms/plugin-ecommerce
 import { buildConfig } from 'payload'
 import { ecommercePlugin } from '@payloadcms/plugin-ecommerce'
 import { paygateAdapter, paygateAdapterClient } from '@innovateium/payload-dpo'
-import type { PaymentAdapterClient } from '@innovateium/payload-dpo'
+import type { PaymentAdapterClient } from '@payloadcms/plugin-ecommerce/types'
 
 export default buildConfig({
   plugins: [
