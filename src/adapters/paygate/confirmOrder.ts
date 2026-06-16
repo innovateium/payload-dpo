@@ -84,6 +84,15 @@ export const confirmOrder =
         customer: req.user?.id,
         status: 'processing',
         transactions: [transaction.id],
+        ...((transaction as Record<string, unknown>).billingAddress
+          ? { billingAddress: (transaction as Record<string, unknown>).billingAddress }
+          : {}),
+        ...((transaction as Record<string, unknown>).shippingAddress
+          ? { shippingAddress: (transaction as Record<string, unknown>).shippingAddress }
+          : {}),
+        ...((transaction as Record<string, unknown>).items
+          ? { items: (transaction as Record<string, unknown>).items }
+          : {}),
       },
       req,
     })

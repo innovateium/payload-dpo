@@ -7,12 +7,16 @@ import { CURRENCY_LOCALE_MAP, DEFAULT_PAYGATE_URL } from '../../lib/constants.js
 import { initiateTransaction } from '../../lib/paygate.js'
 
 function resolveCountry(currency: string, configDefault: string | undefined): string {
-  if (configDefault) {return configDefault}
+  if (configDefault) {
+    return configDefault
+  }
   return CURRENCY_LOCALE_MAP[currency]?.country ?? 'ZAF'
 }
 
 function resolveLocale(currency: string, configDefault: string | undefined): string {
-  if (configDefault) {return configDefault}
+  if (configDefault) {
+    return configDefault
+  }
   return CURRENCY_LOCALE_MAP[currency]?.locale ?? 'en-za'
 }
 
@@ -20,15 +24,23 @@ export const initiatePayment =
   (props: PaygateAdapterArgs) =>
   async (args: {
     data: {
+      billingAddress?: Record<string, unknown>
       cart: Record<string, unknown>
       currency: string
       customerEmail: string
+      shippingAddress?: Record<string, unknown>
     }
     req: any
     transactionsSlug: string
   }): Promise<InitiatePaymentReturnType> => {
     const { data, req, transactionsSlug } = args
-    const { cart, currency, customerEmail } = data
+    const {
+      billingAddress: dataBillingAddress,
+      cart,
+      currency,
+      customerEmail,
+      shippingAddress: dataShippingAddress,
+    } = data
     const payload = req.payload
 
     const paygateId = props.paygateId
@@ -68,7 +80,7 @@ export const initiatePayment =
             : (priceField as number) || 0
       }
       if (variant) {
-        const variantPriceField = (variant)?.[`priceIn${txCurrency}`]
+        const variantPriceField = variant?.[`priceIn${txCurrency}`]
         const variantPrice =
           typeof variantPriceField === 'object'
             ? ((variantPriceField as Record<string, unknown>)?.amount as number) || 0
@@ -112,15 +124,16 @@ export const initiatePayment =
     }
 
     const billingAddress =
-      (cart.billingAddress as Record<string, unknown>) ||
-      (cart.shippingAddress as Record<string, unknown>) ||
-      undefined
+      dataBillingAddress || (cart.billingAddress as Record<string, unknown>) || undefined
+    const shippingAddress =
+      dataShippingAddress || (cart.shippingAddress as Record<string, unknown>) || undefined
 
     await payload.create({
       collection: transactionsSlug,
       data: {
         amount: Math.round(amount),
         ...(billingAddress ? { billingAddress } : {}),
+        ...(shippingAddress ? { shippingAddress } : {}),
         cart: cart.id,
         currency: txCurrency,
         customer: req.user?.id,

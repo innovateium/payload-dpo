@@ -304,12 +304,13 @@ export default buildConfig({
 
 ### 6.4 How the adapter flow works
 
-1. **User clicks "Pay"** → e-commerce plugin calls `initiatePayment`
-2. **Adapter calculates cart total** from `cart.items[].product.pricePayload[CURRENCY]`
-3. **Adapter calls `initiate.trans`** and creates a transaction record
-4. **Browser redirects** to PayGate
-5. **PayGate redirects back** → e-commerce plugin calls `confirmOrder`
-6. **Adapter queries `query.trans`** → if status is `1` (Approved), creates Order, clears cart, stamps `purchasedAt`
+1. **User fills checkout** → billing & shipping addresses are collected (stored as component state)
+2. **User clicks "Pay"** → e-commerce plugin calls `initiatePayment` with `additionalData` containing `customerEmail`, `billingAddress`, `shippingAddress`
+3. **Adapter calculates cart total** from `cart.items[].product.pricePayload[CURRENCY]`
+4. **Adapter calls `initiate.trans`** and creates a transaction record, saving `billingAddress` and `shippingAddress` (from `additionalData`, falling back to cart-level addresses) and cart `items` to the transaction
+5. **Browser redirects** to PayGate
+6. **PayGate redirects back** → e-commerce plugin calls `confirmOrder`
+7. **Adapter queries `query.trans`** → if status is `1` (Approved), creates Order with `billingAddress`, `shippingAddress`, and `items` copied from the transaction, clears cart, stamps `purchasedAt`
 
 ---
 
@@ -587,7 +588,7 @@ Default columns in list view: `reference`, `amount`, `currency`, `transactionSta
 
 ### E-commerce adapter: `transactions` (from `@payloadcms/plugin-ecommerce`)
 
-The adapter adds a `paygate` group field:
+The adapter adds a `paygate` group field and copies address/item fields:
 
 ```
 transactions/
@@ -595,7 +596,10 @@ transactions/
 │   ├── payRequestId (text)
 │   └── reference (text)
 ├── amount
+├── billingAddress (json - from initiatePayment additionalData)
+├── shippingAddress (json - from initiatePayment additionalData)
 ├── currency
+├── items (array of { product, variant, quantity } - from cart)
 ├── status
 ├── rawResponse (json - set by webhooks handler)
 ├── transactionStatus (text - set by webhooks handler)
@@ -649,6 +653,28 @@ transactions/
 | `defaultLocale`    | Auto from currency                        | Locale override                         |
 | `label`            | `'PayGate'`                               | Payment method label shown in UI        |
 | `transactionsSlug` | `'transactions'`                          | E-commerce transactions collection slug |
+
+### Frontend `additionalData` fields
+
+When calling `initiatePayment` from the e-commerce plugin's React provider, pass a `additionalData` object with these fields:
+
+| Field             | Type     | Required? | Description                                     |
+| ----------------- | -------- | --------- | ----------------------------------------------- |
+| `customerEmail`   | `string` | Yes\*     | Customer email (\*required for guest checkout)  |
+| `billingAddress`  | `object` | No        | Billing address saved to transaction and order  |
+| `shippingAddress` | `object` | No        | Shipping address saved to transaction and order |
+
+Example:
+
+```ts
+initiatePayment('paygate', {
+  additionalData: {
+    customerEmail: 'user@example.com',
+    billingAddress: { line1: '...', city: '...' },
+    shippingAddress: { line1: '...', city: '...' },
+  },
+})
+```
 
 ### Currency auto-resolution
 
