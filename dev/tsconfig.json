@@ -19,14 +19,17 @@
       "@payload-config": [
         "./payload.config.ts"
       ],
-      "": [
+      "@innovateium/payload-dpo": [
         "../src/index.ts"
       ],
-      "/client": [
+      "@innovateium/payload-dpo/client": [
         "../src/exports/client.ts"
       ],
-      "/rsc": [
+      "@innovateium/payload-dpo/rsc": [
         "../src/exports/rsc.ts"
+      ],
+      "@innovateium/payload-dpo/types": [
+        "../src/exports/types.ts"
       ]
     },
     "noEmit": true,

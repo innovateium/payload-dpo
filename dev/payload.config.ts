@@ -1,3 +1,4 @@
+import { dpoPlugin } from '@innovateium/payload-dpo'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
@@ -6,7 +7,6 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
-import { dpoPlugin } from '../src/index.js'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
@@ -63,20 +63,19 @@ const buildConfigWithMemoryDB = async () => {
         collections: {
           posts: true,
         },
+        defaultCurrency: 'ZAR',
         paygateId: process.env.PAYGATE_ID,
         paygateKey: process.env.PAYGATE_KEY,
-
         routes: {
           initiate: '/dpo/initiate',
-          return: '/dpo/return',
           notify: '/dpo/notify',
+          return: '/dpo/return',
           status: '/dpo/status',
         },
-        defaultCurrency: 'ZAR',
         transactionCollectionSlug: 'dpo-transactions',
       }),
     ],
-    secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
+    secret: process.env.PAYLOAD_SECRET!,
     sharp,
     typescript: {
       outputFile: path.resolve(dirname, 'payload-types.ts'),
