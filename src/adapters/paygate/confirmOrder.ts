@@ -109,11 +109,14 @@ export const confirmOrder =
           cartsSlug: args.cartsSlug,
           payload,
           req,
+          secret: data.secret as string | undefined,
         })
         await payload.update({
           id: cartId,
           collection: args.cartsSlug,
           data: { purchasedAt: new Date().toISOString() },
+          req,
+          overrideAccess: true,
         })
       } catch {
         await payload.update({
@@ -123,6 +126,8 @@ export const confirmOrder =
             items: [],
             purchasedAt: new Date().toISOString(),
           },
+          req,
+          overrideAccess: true,
         })
       }
     }
